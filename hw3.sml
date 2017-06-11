@@ -46,13 +46,36 @@ fun longest_string2 strlst =
   List.foldl (fn (x, init) => if String.size x >= String.size init then x else init) "" strlst
 
 fun longest_string_helper f strlst =
-  List.foldl (fn (x, y) => if f (String.size x, String.size y) then x else y) "" strlst
+  List.foldl (fn (x, init) => if f (String.size x, String.size init) then x else init) "" strlst
 
-val longest_string3 = longest_string_helper (fn (x, y) => x > y)
+val longest_string3 =
+    longest_string_helper (fn (x, y) => x > y)
 
-val longest_string4 = longest_string_helper (fn (x, y) => x >= y)
+val longest_string4 =
+    longest_string_helper (fn (x, y) => x >= y)
 
-					    
+val longest_capitalized =
+    longest_string1 o only_capitals
+
+val rev_string =
+    String.implode o List.rev o String.explode
+
+fun first_answer f lst =
+  case lst of
+      [] => raise NoAnswer
+    | x :: xs' => case f x of
+		      SOME v => v
+		    | NONE => first_answer f xs'
+
+fun all_answers f lst =
+  let fun all_answers_helper (lst1, acc) =
+	case lst1 of
+	    [] => SOME acc
+	  | x :: xs' => case f x of
+			    NONE => NONE
+			  | SOME v => all_answers_helper (xs', acc@v)
+  in all_answers_helper (lst, [])
+  end
 (*
 foldl f init [x1, x2, ..., xn]
 returns
